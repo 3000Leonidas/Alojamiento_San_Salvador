@@ -3,13 +3,26 @@
     <img :src="room.imagen" alt="Imagen habitación" class="room-img" />
     <h3>{{ room.tipo_habitacion }}</h3>
     <p class="room-number">Nº {{ room.numero_habitacion }}</p>
-    <p class="price">{{ room.precio_por_noche }} Bs</p>
+
+    <p class="price">
+      <template v-if="room.porcentaje_descuento">
+        <del class="original">{{ room.precio_por_noche }} Bs</del><br />
+        <span class="descuento">
+          {{ calcularDescuento(room.precio_por_noche, room.porcentaje_descuento) }} Bs
+        </span>
+      </template>
+      <template v-else>
+        {{ room.precio_por_noche }} Bs
+      </template>
+    </p>
+
     <p :class="['estado', room.disponible ? 'verde' : 'rojo']">
       {{ room.disponible ? 'Disponible' : 'No Disponible' }}
     </p>
+
     <router-link :to="{ name: 'RoomDetail', params: { id: room.id } }" class="detalle-btn">
-  Detalle y Reservar
-</router-link>
+      Detalle y Reservar
+    </router-link>
 
     <button
       v-if="mostrarBotonCambio"
@@ -34,8 +47,12 @@ const emit = defineEmits(['cambiar-estado']);
 function cambiarDisponibilidad() {
   emit('cambiar-estado', props.room.id, !props.room.disponible);
 }
-</script>
 
+function calcularDescuento(precio, porcentaje) {
+  const final = precio - (precio * porcentaje / 100);
+  return final.toFixed(2);
+}
+</script>
 <style scoped>
 .room-card {
   background: white;
@@ -48,24 +65,12 @@ function cambiarDisponibilidad() {
   transition: all 0.3s ease;
 }
 
-
-.room-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
 .room-img {
   width: 100%;
   height: 160px;
   object-fit: cover;
 }
 
-.room-content {
-  padding: 2.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
 h3 {
   margin: 0.5rem auto;
   color: #2c3e50;
@@ -83,7 +88,31 @@ h3 {
   color: #42b983;
   margin: auto;
   font-size: 1.6rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+.price-con-descuento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.original {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 1rem;
+}
+
+.descuento {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.final {
+  color: #27ae60;
+  font-weight: bold;
 }
 
 .estado {
@@ -107,13 +136,6 @@ h3 {
   color: white;
 }
 
-.buttons {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .detalle-btn {
   background-color: #42b983;
   color: white;
@@ -123,6 +145,7 @@ h3 {
   text-align: center;
   transition: all 0.3s ease;
   font-size: 0.9rem;
+  margin-top: 1rem;
 }
 
 .detalle-btn:hover {
@@ -138,6 +161,7 @@ h3 {
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .cambiar-btn:hover {

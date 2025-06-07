@@ -36,7 +36,7 @@ const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/search', name: 'RoomSearch', component: RoomSearch },
   { path: '/room/:id', name: 'RoomDetail', component: RoomDetail, props: true },
-  { path: '/servicios', name: 'Restaurant', component: Restaurant }, 
+  { path: '/servicios', name: 'Restaurant', component: Restaurant },
 
   // Admin Panel
   {
@@ -46,15 +46,27 @@ const routes = [
     beforeEnter: verificarRolAdmin
   },
   {
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: AdminUsers,
+    beforeEnter: verificarRolAdmin
+  },
+  {
+    path: '/admin/huespedes',
+    name: 'AdminHuespedes',
+    component: AdminHuespedes,
+    beforeEnter: verificarRolAdmin
+  },
+  {
     path: '/admin/rooms',
     name: 'AdminRooms',
     component: AdminRooms,
     beforeEnter: verificarRolAdmin
   },
   {
-    path: '/admin/users',
-    name: 'AdminUsers',
-    component: AdminUsers,
+    path: '/admin/registrar-habitacion',
+    name: 'RegisterRoom',
+    component: RegisterRoom,
     beforeEnter: verificarRolAdmin
   },
   {
@@ -67,33 +79,31 @@ const routes = [
     path: '/admin/discounts',
     name: 'AdminDiscounts',
     component: Discounts,
-    beforeEnter: async (to, from, next) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || user.rol !== 'admin') return next('/login');
-    next();
-  }
+    beforeEnter: verificarRolAdmin
   },
   {
-    path: '/admin/registrar-habitacion',
-    name: 'RegisterRoom',
-    component: RegisterRoom,
-    beforeEnter: async (to, from, next) => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user || user.rol !== 'admin') return next('/login');
-      next();
-    }
+    path: '/admin/reservas',
+    name: 'AdminReservas',
+    component: () => import('../views/Admin/AdminReservas.vue'),
+    beforeEnter: verificarRolAdmin
   },
   {
-  path: '/admin/huespedes',
-  name: 'AdminHuespedes',
-  component: AdminHuespedes,
+    path: '/admin/platos',
+    name: 'AdminPlatos',
+    component: () => import('../views/Admin/Adminplatos.vue'),
+    beforeEnter: verificarRolAdmin
+  },
+  {
+    path: '/admin/reportes-clientes',
+    name: 'ReportesClientes',
+    component: () => import('../views/Admin/ReportesClientes.vue'),
+    beforeEnter: verificarRolAdmin
+  },
+  {
+  path: '/admin/reportes',
+  name: 'ReporteGanancias',
+  component: () => import('../views/Admin/ReporteGanancias.vue'),
   beforeEnter: verificarRolAdmin
-},
-{
-  path: '/admin/reservas',
-  name: 'AdminReservas',
-  component: () => import('../views/Admin/AdminReservas.vue'),
-  meta: { requiresAuth: true, role: 'admin' }
 }
 ];
 

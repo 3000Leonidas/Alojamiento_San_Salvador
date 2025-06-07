@@ -18,21 +18,41 @@
           </div>
         </div>
         
-        <div class="room-details">
-          <h3>{{ room?.tipo_habitacion }}</h3>
-          <div class="detail-item">
-            <span class="detail-label">Número:</span>
-            <span class="detail-value">{{ room?.numero_habitacion }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Precio/noche:</span>
-            <span class="detail-value">{{ room?.precio_por_noche }} Bs</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Capacidad:</span>
-            <span class="detail-value">{{ getCapacityText(room?.tipo_habitacion) }}</span>
-          </div>
-        </div>
+     <div class="room-details">
+  <h3>{{ room?.tipo_habitacion }}</h3>
+  <div class="detail-item">
+    <span class="detail-label">Número:</span>
+    <span class="detail-value">{{ room?.numero_habitacion }}</span>
+  </div>
+  <div class="detail-item">
+    <span class="detail-label">Precio/noche:</span>
+    <span class="detail-value">
+      <template v-if="hasActiveDiscount">
+        <span class="original-price">{{ room?.precio_por_noche }} Bs</span>
+        <span class="discounted-price">{{ discountedsPrice }} Bs</span>
+        <span class="discount-badge">-{{ room?.porcentaje_descuento }}%</span>
+      </template>
+      <template v-else>
+        {{ room?.precio_por_noche }} Bs
+      </template>
+    </span>
+  </div>
+     <div class="detail-item">
+    <span class="detail-label">Capacidad:</span>
+    <span class="detail-value">{{ getCapacityText(room?.tipo_habitacion) }}</span>
+  </div>
+    
+    <!-- Mostrar información del descuento si existe -->
+    <div v-if="hasActiveDiscount" class="discount-info">
+    <div class="discount-title">🏷️ Promoción Activa: {{ room?.nombre_descuento }}</div>
+    <div class="discount-dates">
+      Válido del {{ formatDate(room?.fecha_inicio_descuento) }} al {{ formatDate(room?.fecha_fin_descuento) }}
+    </div>
+    <div class="discount-savings">
+      Ahorras {{ calculateSavings }} Bs por noche
+    </div>
+  </div>
+</div>
       </div>
 
       <!-- Formulario de reserva -->
@@ -120,19 +140,23 @@
       </form>
 
       <!-- Resumen de reserva -->
-      <div v-if="showSummary" class="booking-summary">
+       <div v-if="showSummary" class="booking-summary">
         <h3>💰 Resumen de Pago</h3>
-        
         <div class="summary-item">
           <span>Noches:</span>
           <span>{{ nightsCount }}</span>
         </div>
-        
         <div class="summary-item">
           <span>Precio por noche:</span>
-          <span>{{ room?.precio_por_noche }} Bs</span>
+          <span>
+            <template v-if="room?.porcentaje_descuento">
+              {{ calcularDescuento(room?.precio_por_noche, room?.porcentaje_descuento) }} Bs
+            </template>
+            <template v-else>
+              {{ room?.precio_por_noche }} Bs
+            </template>
+          </span>
         </div>
-        
         <div class="summary-item total">
           <span>Total a pagar:</span>
           <span>{{ totalAmount }} Bs</span>
@@ -190,6 +214,8 @@ const huesped = ref({
   fecha_salida: ''
 });
 
+
+
 // Fecha mínima (hoy)
 const minDate = computed(() => {
   const today = new Date();
@@ -226,25 +252,66 @@ function getMaxCapacity(roomType) {
   return capacities[roomType] || 2;
 }
 
+// Computed properties para descuentos
+const hasActiveDiscount = computed(() => {
+  return room.value?.tiene_descuento_activo && room.value?.descuento_id;
+});
+
+const discountedsPrice = computed(() => {
+  if (!hasActiveDiscount.value) return room.value?.precio_por_noche;
+  return room.value?.precio_con_descuento;
+});
+
+const calculateSavings = computed(() => {
+  if (!hasActiveDiscount.value) return 0;
+  return (room.value.precio_por_noche - room.value.precio_con_descuento).toFixed(2);
+});
+
 function getCapacityText(roomType) {
   const max = getMaxCapacity(roomType);
   return max === 1 ? '1 persona' : `${max} personas`;
 }
 
+// Función para formatear fechas
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('es-ES', options);
+};
+
+// Computed para verificar si hay descuento
+const hasRoomDiscount = computed(() => {
+  return room.value?.porcentaje_descuento > 0 && 
+         isDiscountActive(room.value?.fecha_inicio_descuento, room.value?.fecha_fin_descuento);
+});
+
+const discountedPrice = computed(() => {
+  if (!hasRoomDiscount.value) return room.value?.precio_por_noche;
+  const discount = room.value.porcentaje_descuento / 100;
+  return (room.value.precio_por_noche * (1 - discount)).toFixed(2);
+});
+
+// Función para verificar si el descuento está activo
+const isDiscountActive = (startDate, endDate) => {
+  if (!startDate || !endDate) return false;
+  const today = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  return today >= start && today <= end;
+};
+
+
 // Cargar datos de la habitación
 onMounted(async () => {
   try {
     const habitacionId = parseInt(route.params.id);
-    if (!habitacionId) throw new Error('ID inválido de habitación');
-
-    const res = await fetch('http://localhost:8001/api/habitaciones/listar.php');
+    const res = await fetch(`http://localhost:8001/api/habitaciones/detalle.php?id=${habitacionId}`);
     const data = await res.json();
-
+    
     if (data.success) {
-      room.value = data.habitaciones.find(r => r.id == habitacionId);
-      if (!room.value) throw new Error('Habitación no encontrada');
+      room.value = data.habitacion;
     } else {
-      throw new Error('No se pudo obtener habitaciones');
+      throw new Error(data.error || 'Error al cargar la habitación');
     }
   } catch (error) {
     console.error('Error al cargar la habitación', error);
@@ -644,5 +711,52 @@ async function registrarReserva() {
   .booking-header h2 {
     font-size: 1.5rem;
   }
+}
+.original-price {
+  text-decoration: line-through;
+  color: #95a5a6;
+  margin-right: 0.5rem;
+}
+
+.discounted-price {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.discount-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background-color: #2ecc71;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.discount-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+.discount-title {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.discount-dates {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-bottom: 0.25rem;
+}
+
+.discount-savings {
+  font-size: 0.9rem;
+  color: #27ae60;
+  font-weight: 500;
 }
 </style>
