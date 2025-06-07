@@ -8,7 +8,7 @@
     <form @submit.prevent="registrar" class="register-form">
       <div class="form-section">
         <h3 class="section-title">📋 Información Básica</h3>
-        
+
         <div class="form-group">
           <label>Número de Habitación</label>
           <input 
@@ -26,7 +26,7 @@
             <option disabled value="">Seleccione una opción</option>
             <option value="Familiar">Familiar (hasta 5 personas)</option>
             <option value="Matrimonial">Matrimonial (2 personas)</option>
-            <option value="Individual">Amigos (hasta 6 personas)</option>
+            <option value="Amigos">Amigos (hasta 6 personas)</option>
             <option value="Eventos">Eventos (hasta 10 personas)</option>
           </select>
         </div>
@@ -59,7 +59,7 @@
 
       <div class="form-section">
         <h3 class="section-title">🖼️ Imagen de la Habitación</h3>
-        
+
         <div class="upload-area" @click="triggerFileInput" @dragover.prevent @drop="handleDrop">
           <input 
             type="file" 
@@ -68,13 +68,13 @@
             accept="image/*"
             class="file-input"
           />
-          
+
           <div v-if="!imagenUrl" class="upload-prompt">
             <span class="upload-icon">📁</span>
             <p>Arrastra una imagen aquí o haz clic para seleccionar</p>
             <small>Formatos aceptados: JPG, PNG (Máx. 5MB)</small>
           </div>
-          
+
           <div v-else class="image-preview">
             <img :src="imagenUrl" alt="Vista previa" class="preview-image" />
             <button type="button" @click.stop="removeImage" class="remove-btn">
@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const nueva = ref({
   numero_habitacion: '',
@@ -113,6 +113,10 @@ const imagenUrl = ref('');
 const mensaje = ref('');
 const processing = ref(false);
 const fileInput = ref(null);
+
+const messageClass = computed(() => {
+  return mensaje.value.startsWith('✅') ? 'success' : 'error';
+});
 
 function triggerFileInput() {
   fileInput.value.click();
@@ -134,13 +138,11 @@ function handleImageUpload(event) {
 }
 
 function processImage(file) {
-  // Validar tamaño (5MB máximo)
   if (file.size > 5 * 1024 * 1024) {
     mensaje.value = '❌ La imagen no debe exceder los 5MB';
     return;
   }
-  
-  // Validar tipo
+
   if (!file.type.match('image.*')) {
     mensaje.value = '❌ Por favor selecciona un archivo de imagen válido';
     return;
@@ -168,7 +170,7 @@ async function registrar() {
   formData.append('tipo_habitacion', nueva.value.tipo_habitacion);
   formData.append('precio_por_noche', nueva.value.precio_por_noche);
   formData.append('esta_disponible', nueva.value.esta_disponible ? 1 : 0);
-  
+
   if (imagen.value) {
     formData.append('imagen', imagen.value);
   }
@@ -181,9 +183,9 @@ async function registrar() {
       method: 'POST',
       body: formData
     });
-    
+
     const data = await res.json();
-    
+
     if (data.success) {
       mensaje.value = '✅ Habitación registrada con éxito';
       resetForm();
@@ -199,16 +201,15 @@ async function registrar() {
 }
 
 function resetForm() {
-  nueva.value = { 
-    numero_habitacion: '', 
-    tipo_habitacion: '', 
-    precio_por_noche: 0, 
-    esta_disponible: true 
+  nueva.value = {
+    numero_habitacion: '',
+    tipo_habitacion: '',
+    precio_por_noche: 0,
+    esta_disponible: true
   };
   removeImage();
 }
 </script>
-
 <style scoped>
 .register-container {
   max-width: 800px;

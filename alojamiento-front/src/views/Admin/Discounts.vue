@@ -151,8 +151,10 @@ async function registrarDescuento() {
 async function eliminarDescuento(id) {
   if (!confirm('¿Estás seguro de eliminar este descuento?')) return;
   try {
-    const res = await fetch(`http://localhost:8001/api/descuentos/eliminar.php?id=${id}`, {
-      method: 'DELETE'
+    const res = await fetch(`http://localhost:8001/api/descuentos/eliminar.php`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id })
     });
     const data = await res.json();
     if (data.success) {

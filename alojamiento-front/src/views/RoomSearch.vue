@@ -58,6 +58,7 @@ async function cargarHabitaciones() {
     imagen: h.imagen
     ? `http://localhost:8001/${h.imagen}`
     : 'http://localhost:8001/uploads/imagen-default.jpg',
+      id_descuento_especial: h.id_descuento_especial || null,
       disponible: h.disponible == 1
       }));
     }

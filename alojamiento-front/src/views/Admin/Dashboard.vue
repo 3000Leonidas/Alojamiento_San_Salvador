@@ -6,106 +6,99 @@
     </div>
     
     <div class="admin-columns-container">
+      <!-- Columna 1 -->
       <div class="admin-column">
-        <!-- Columna 1 -->
         <router-link to="/admin/users" class="menu-item">
-          <div class="menu-icon user-icon">
-            <i class="fas fa-users"></i>
-          </div>
+          <div class="menu-icon user-icon"><i class="fas fa-users"></i></div>
           <div class="menu-content">
             <h3>Gestión de Usuarios</h3>
             <p>Administra usuarios y permisos</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
 
         <router-link to="/admin/huespedes" class="menu-item">
-          <div class="menu-icon guest-icon">
-            <i class="fas fa-address-book"></i>
-          </div>
+          <div class="menu-icon guest-icon"><i class="fas fa-address-book"></i></div>
           <div class="menu-content">
             <h3>Gestión de Huéspedes</h3>
             <p>Registro de huéspedes</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
       </div>
 
+      <!-- Columna 2 -->
       <div class="admin-column">
-        <!-- Columna 2 -->
         <router-link to="/admin/rooms" class="menu-item">
-          <div class="menu-icon room-icon">
-            <i class="fas fa-bed"></i>
-          </div>
+          <div class="menu-icon room-icon"><i class="fas fa-bed"></i></div>
           <div class="menu-content">
             <h3>Habitaciones</h3>
             <p>Administra habitaciones</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
 
         <router-link to="/admin/registrar-habitacion" class="menu-item">
-          <div class="menu-icon add-icon">
-            <i class="fas fa-plus-circle"></i>
-          </div>
+          <div class="menu-icon add-icon"><i class="fas fa-plus-circle"></i></div>
           <div class="menu-content">
             <h3>Registrar Habitación</h3>
             <p>Agrega nuevas habitaciones</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
       </div>
 
+      <!-- Columna 3 -->
       <div class="admin-column">
-        <!-- Columna 3 -->
         <router-link to="/admin/reservas" class="menu-item">
-          <div class="menu-icon booking-icon">
-            <i class="fas fa-calendar-check"></i>
-          </div>
+          <div class="menu-icon booking-icon"><i class="fas fa-calendar-check"></i></div>
           <div class="menu-content">
             <h3>Gestión de Reservas</h3>
             <p>Administra las reservas</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
 
         <router-link to="/admin/images" class="menu-item">
-          <div class="menu-icon image-icon">
-            <i class="fas fa-images"></i>
-          </div>
+          <div class="menu-icon image-icon"><i class="fas fa-images"></i></div>
           <div class="menu-content">
             <h3>Galería de Imágenes</h3>
             <p>Administra imágenes</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
       </div>
 
+      <!-- Columna 4 -->
       <div class="admin-column">
-        <!-- Columna 4 -->
         <router-link to="/admin/discounts" class="menu-item">
-          <div class="menu-icon discount-icon">
-            <i class="fas fa-tag"></i>
-          </div>
+          <div class="menu-icon discount-icon"><i class="fas fa-tags"></i></div>
           <div class="menu-content">
             <h3>Promociones</h3>
             <p>Configura descuentos</p>
           </div>
-          <div class="menu-arrow">
-            <i class="fas fa-chevron-right"></i>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+        </router-link>
+
+        <router-link to="/admin/platos" class="menu-item">
+          <div class="menu-icon report-icon"><i class="fas fa-utensils"></i></div>
+          <div class="menu-content">
+            <h3>Gestión de Platos</h3>
+            <p>Platos del restaurante</p>
           </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+        </router-link>
+      </div>
+
+      <!-- Columna 5 -->
+      <div class="admin-column">
+        <router-link to="/admin/reportes-clientes" class="menu-item">
+          <div class="menu-icon discount-icon"><i class="fas fa-user-friends"></i></div>
+          <div class="menu-content">
+            <h3>Clientes Frecuentes</h3>
+            <p>Reporte de clientes frecuentes</p>
+          </div>
+          <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
         </router-link>
 
         <router-link to="/admin/reportes" class="menu-item">
@@ -113,8 +106,8 @@
             <i class="fas fa-chart-bar"></i>
           </div>
           <div class="menu-content">
-            <h3>Reportes</h3>
-            <p>Genera estadísticas</p>
+            <h3>Reportes de ganancias</h3>
+            <p>Genera estadísticas de ganacias</p>
           </div>
           <div class="menu-arrow">
             <i class="fas fa-chevron-right"></i>
@@ -131,7 +124,6 @@ import { onMounted } from 'vue';
 // Cargar Font Awesome
 onMounted(() => {
   const script = document.createElement('script');
-  script.src = 'https://kit.fontawesome.com/a076d05399.js';
   script.crossOrigin = 'anonymous';
   document.head.appendChild(script);
 });
